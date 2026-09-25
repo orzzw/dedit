@@ -119,6 +119,37 @@ int editor_add_line(struct Editor *editor, const char *text)
     return editor_insert_line(editor, editor->size, text);
 }
 
+int editor_insert_char(struct Editor *editor, size_t row, size_t col, char ch)
+{
+    char *line;
+    size_t length;
+
+    if(row >= editor->size) return 0;
+
+    line = editor->lines[row];
+    length = editor_strlen(line);
+
+    if(col > length) return 0;
+
+    char *temp;
+
+    temp = realloc(line, sizeof(char) * (length + 2));
+
+    if(temp == NULL) return 0;
+
+    line = temp;
+    editor->lines[row] = line;
+
+    for(size_t i = length + 1; i > col; i--)
+    {
+        line[i] = line[i - 1];
+    }
+
+    line[col] = ch;
+
+    return 1;
+}
+
 void editor_destroy(struct Editor *editor)
 {
     for(size_t i = 0; i < editor->size; i++)
