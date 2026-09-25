@@ -11,18 +11,7 @@ struct Editor
     int modified;
 };
 
-struct UI
-{
-    const char *filename;
-    size_t cursor_row;
-    size_t cursor_col;
-    size_t scroll_row;
-    char status_message[100];
-};
-
 void editor_init(struct Editor *editor);
-
-void ui_init(struct UI *ui, const char *filename);
 
 size_t editor_strlen(const char *src);
 

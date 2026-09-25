@@ -11,15 +11,6 @@ void editor_init(struct Editor *editor)
     editor->modified = 0;
 }
 
-void ui_init(struct UI *ui, const char *filename)
-{
-    ui->filename = filename;
-    ui->cursor_row = 0;
-    ui->cursor_col = 0;
-    ui->scroll_row = 0;
-    editor_strcpy(ui->status_message, "Welcome!");
-}
-
 size_t editor_strlen(const char *src)
 {
     size_t len = 0;
