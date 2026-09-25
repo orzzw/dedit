@@ -5,13 +5,13 @@
 
 #define CTRL_S 19
 
-int main(void)
+int main(int argc, char *argv[])
 {
     struct Editor editor;
 
     editor_init(&editor);
 
-    if(!editor_load(&editor, "test.txt"))
+    if(!editor_load(&editor, argv[1]))
     {
         printf("Failed to load\n");
         editor_destroy(&editor);
@@ -90,7 +90,7 @@ int main(void)
         }
         else if(key == CTRL_S)
         {
-            if(editor_save(&editor, "test.txt"))
+            if(editor_save(&editor, argv[1]))
             {
                 saved = 1;
             }
