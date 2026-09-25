@@ -67,6 +67,14 @@ int main(void)
                 cursor_col--;
             }
         }
+        else if(key == '\n')
+        {
+            if(editor_insert_newline(&editor, cursor_row, cursor_col))
+            {
+                cursor_row++;
+                cursor_col = 0;
+            }
+        }
         else
         {
             if(editor_insert_char(&editor, cursor_row, cursor_col, (char)key))
