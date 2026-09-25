@@ -3,6 +3,8 @@
 #include <ncurses.h>
 #include <stdio.h>
 
+#define CTRL_S 19
+
 int main(void)
 {
     struct Editor editor;
@@ -18,12 +20,14 @@ int main(void)
 
     initscr();
 
-    cbreak();
+    raw();
     noecho();
     keypad(stdscr, TRUE);
 
     size_t cursor_row = 0;
     size_t cursor_col = 0;
+
+    int saved = 0;
 
     while(1)
     {
@@ -35,6 +39,15 @@ int main(void)
         }
 
         move((int)cursor_row, (int)cursor_col);
+
+        if(saved == 1)
+        {
+            mvprintw(LINES - 1, 0, "Saved!");
+        }
+        else if(saved == -1)
+        {
+            mvprintw(LINES - 1, 0, "Save failed!");
+        }
 
         refresh();
 
@@ -73,6 +86,17 @@ int main(void)
             {
                 cursor_row++;
                 cursor_col = 0;
+            }
+        }
+        else if(key == CTRL_S)
+        {
+            if(editor_save(&editor, "test.txt"))
+            {
+                saved = 1;
+            }
+            else
+            {
+                saved = -1;
             }
         }
         else
