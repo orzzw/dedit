@@ -16,6 +16,7 @@ struct UI
     const char *filename;
     size_t cursor_row;
     size_t cursor_col;
+    size_t scroll_row;
     char status_message[100];
 };
 

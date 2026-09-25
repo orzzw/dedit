@@ -15,6 +15,27 @@ void ui_draw_status_bar(struct UI *ui)
     ui->status_message);
 }
 
+void ui_draw_window(struct UI *ui, struct Editor *editor)
+{
+    if(ui->cursor_row < ui->scroll_row)
+    {
+        ui->scroll_row = ui->cursor_row;
+    }
+    else if(ui->cursor_row - ui->scroll_row >= (size_t)(LINES - 1))
+    {
+        ui->scroll_row = ui->cursor_row - (size_t)LINES + 2;
+    }
+
+    for(size_t i = ui->scroll_row; i < editor->size && i < ui->scroll_row + (size_t)LINES - 1; i++)
+    {
+        mvprintw((int)(i - ui->scroll_row), 0, "%s", editor->lines[i]);
+    }
+
+    ui_draw_status_bar(ui);
+
+    move((int)(ui->cursor_row - ui->scroll_row), (int)ui->cursor_col);
+}
+
 int main(int argc, char *argv[])
 {
     struct Editor editor;
@@ -40,15 +61,8 @@ int main(int argc, char *argv[])
     {
         clear();
 
-        for(size_t i = 0; i < editor.size; i++)
-        {
-            mvprintw((int)i, 0, "%s", editor.lines[i]);
-        }
-        
-        ui_draw_status_bar(&ui);
-
-        move((int)ui.cursor_row, (int)ui.cursor_col);
-
+        ui_draw_window(&ui, &editor);
+    
         refresh();
 
         int key = getch();
