@@ -34,4 +34,6 @@ int editor_load(struct Editor *editor, const char *filename);
 
 int editor_insert_char(struct Editor *editor, size_t row, size_t col, char ch);
 
+int editor_delete_char(struct Editor *editor, size_t row, size_t col);
+
 #endif

@@ -60,6 +60,13 @@ int main(void)
         {
             cursor_col++;
         }
+        else if(key == KEY_BACKSPACE)
+        {
+            if(editor_delete_char(&editor, cursor_row, cursor_col))
+            {
+                cursor_col--;
+            }
+        }
         else
         {
             if(editor_insert_char(&editor, cursor_row, cursor_col, (char)key))
