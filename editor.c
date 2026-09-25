@@ -8,6 +8,15 @@ void editor_init(struct Editor *editor)
     editor->lines = NULL;
     editor->size = 0;
     editor->capacity = 0;
+    editor->modified = 0;
+}
+
+void ui_init(struct UI *ui, const char *filename)
+{
+    ui->filename = filename;
+    ui->cursor_row = 0;
+    ui->cursor_col = 0;
+    editor_strcpy(ui->status_message, "Welcome!");
 }
 
 size_t editor_strlen(const char *src)
@@ -21,6 +30,17 @@ size_t editor_strlen(const char *src)
     }
 
     return len;
+}
+
+void editor_strcpy(char *dest, char *src)
+{
+    while(*src != '\0')
+    {
+        *dest = *src;
+        dest++;
+        src++;
+    }
+    *dest = '\0';
 }
 
 char *editor_strdup(const char *src)
@@ -147,6 +167,8 @@ int editor_insert_char(struct Editor *editor, size_t row, size_t col, char ch)
 
     line[col] = ch;
 
+    editor->modified = 1;
+
     return 1;
 }
 
@@ -168,6 +190,7 @@ int editor_delete_char(struct Editor *editor, size_t row, size_t col)
         line[i] = line[i + 1];
     }
 
+    editor->modified = 1;
     return 1;
 }
 
@@ -186,6 +209,8 @@ int editor_insert_newline(struct Editor *editor, size_t row, size_t col)
 
     src = malloc(sizeof(char) * (length - col + 1));
 
+    if(src == NULL) return 0;
+
     for(size_t i = 0; i + col <= length; i++)
     {
         src[i] = line[i + col];
@@ -202,6 +227,8 @@ int editor_insert_newline(struct Editor *editor, size_t row, size_t col)
         return 0;
     }
 
+
+    editor->modified = 1;
     return 1;
 }
 
@@ -218,7 +245,7 @@ void editor_destroy(struct Editor *editor)
     editor->capacity = 0;
 }
 
-int editor_save(const struct Editor *editor, const char *filename)
+int editor_save(struct Editor *editor, const char *filename)
 {
     FILE *fp;
 
@@ -233,6 +260,7 @@ int editor_save(const struct Editor *editor, const char *filename)
 
     fclose(fp);
 
+    editor->modified = 0;
     return 1;
 }
 
@@ -309,5 +337,6 @@ int editor_load(struct Editor *editor, const char *filename)
 
     fclose(fp);
 
+    editor->modified = 0;
     return 1;
 }

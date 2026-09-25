@@ -4,12 +4,24 @@
 #include <stdio.h>
 
 #define CTRL_S 19
+#define CTRL_Q 17
+
+void ui_draw_status_bar(struct UI *ui)
+{
+    mvprintw(LINES - 1, 0, "%s | Ln %zu, Col %zu | %s", 
+    ui->filename,
+    ui->cursor_row + 1,
+    ui->cursor_col + 1,
+    ui->status_message);
+}
 
 int main(int argc, char *argv[])
 {
     struct Editor editor;
+    struct UI ui;
 
     editor_init(&editor);
+    ui_init(&ui, argv[1]);
 
     if(!editor_load(&editor, argv[1]))
     {
@@ -24,11 +36,6 @@ int main(int argc, char *argv[])
     noecho();
     keypad(stdscr, TRUE);
 
-    size_t cursor_row = 0;
-    size_t cursor_col = 0;
-
-    int saved = 0;
-
     while(1)
     {
         clear();
@@ -37,79 +44,76 @@ int main(int argc, char *argv[])
         {
             mvprintw((int)i, 0, "%s", editor.lines[i]);
         }
+        
+        ui_draw_status_bar(&ui);
 
-        move((int)cursor_row, (int)cursor_col);
-
-        if(saved == 1)
-        {
-            mvprintw(LINES - 1, 0, "Saved!");
-        }
-        else if(saved == -1)
-        {
-            mvprintw(LINES - 1, 0, "Save failed!");
-        }
+        move((int)ui.cursor_row, (int)ui.cursor_col);
 
         refresh();
 
         int key = getch();
 
-        if(key == 'q')
+        if(key == CTRL_Q)
         {
-            break;
+            if(editor.modified == 0) break;
+            else
+            {
+                editor_strcpy(ui.status_message, "Unsaved changes!");
+            }
         }
         else if(key == KEY_UP)
         {
-            if(cursor_row > 0) cursor_row--;
+            if(ui.cursor_row > 0) ui.cursor_row--;
         }
         else if(key == KEY_DOWN)
         {
-            if(cursor_row + 1 < editor.size) cursor_row++;
+            if(ui.cursor_row + 1 < editor.size) ui.cursor_row++;
         }
         else if(key == KEY_LEFT)
         {
-            if(cursor_col > 0) cursor_col--;
+            if(ui.cursor_col > 0) ui.cursor_col--;
         }
         else if(key == KEY_RIGHT)
         {
-            cursor_col++;
+            ui.cursor_col++;
         }
         else if(key == KEY_BACKSPACE)
         {
-            if(editor_delete_char(&editor, cursor_row, cursor_col))
+            if(editor_delete_char(&editor, ui.cursor_row, ui.cursor_col))
             {
-                cursor_col--;
+                ui.cursor_col--;
             }
         }
         else if(key == '\n')
         {
-            if(editor_insert_newline(&editor, cursor_row, cursor_col))
+            if(editor_insert_newline(&editor, ui.cursor_row, ui.cursor_col))
             {
-                cursor_row++;
-                cursor_col = 0;
+                ui.cursor_row++;
+                ui.cursor_col = 0;
             }
         }
         else if(key == CTRL_S)
         {
             if(editor_save(&editor, argv[1]))
             {
-                saved = 1;
+                editor_strcpy(ui.status_message, "Saved!");
             }
             else
             {
-                saved = -1;
+                editor_strcpy(ui.status_message, "Save failed!");
             }
         }
         else
         {
-            if(editor_insert_char(&editor, cursor_row, cursor_col, (char)key))
+            if(editor_insert_char(&editor, ui.cursor_row, ui.cursor_col, (char)key))
             {
-                cursor_col++;
+                ui.cursor_col++;
             }
         }
 
-        if(cursor_col > editor_strlen(editor.lines[cursor_row]))
+        if(ui.cursor_col > editor_strlen(editor.lines[ui.cursor_row]))
         {
-            cursor_col = editor_strlen(editor.lines[cursor_row]);
+            ui.cursor_col = editor_strlen(editor.lines[ui.cursor_row]);
         }
     }
 
@@ -119,3 +123,4 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+

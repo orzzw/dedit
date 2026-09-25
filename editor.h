@@ -8,11 +8,24 @@ struct Editor
     char **lines;
     size_t size;
     size_t capacity;
+    int modified;
+};
+
+struct UI
+{
+    const char *filename;
+    size_t cursor_row;
+    size_t cursor_col;
+    char status_message[100];
 };
 
 void editor_init(struct Editor *editor);
 
+void ui_init(struct UI *ui, const char *filename);
+
 size_t editor_strlen(const char *src);
+
+void editor_strcpy(char *dest, char *src);
 
 char *editor_strdup(const char *src);
 
@@ -28,7 +41,7 @@ int editor_add_line(struct Editor *editor, const char *text);
 
 void editor_destroy(struct Editor *editor);
 
-int editor_save(const struct Editor *editor, const char *filename);
+int editor_save(struct Editor *editor, const char *filename);
 
 int editor_load(struct Editor *editor, const char *filename);
 
