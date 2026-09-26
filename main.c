@@ -69,6 +69,10 @@ int main(int argc, char *argv[])
                 ui.cursor_col--;
             }
         }
+        else if(key == KEY_DC)
+        {
+            editor_delete_forward_char(&editor, ui.cursor_row, ui.cursor_col);
+        }
         else if(key == '\n')
         {
             if(editor_insert_newline(&editor, ui.cursor_row, ui.cursor_col))

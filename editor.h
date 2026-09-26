@@ -25,6 +25,8 @@ int editor_expand(struct Editor *editor);
 
 int editor_delete_line(struct Editor *editor, size_t index);
 
+int editor_delete_forward_char(struct Editor *editor, size_t row, size_t col);
+
 int editor_insert_line(struct Editor *editor, size_t index, const char *text);
 
 int editor_add_line(struct Editor *editor, const char *text);

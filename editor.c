@@ -186,6 +186,28 @@ int editor_delete_char(struct Editor *editor, size_t row, size_t col)
     return 1;
 }
 
+int editor_delete_forward_char(struct Editor *editor, size_t row, size_t col)
+{
+    char *line;
+    size_t length;
+
+    if(row >= editor->size) return 0;
+    if(col == 0) return 0;
+
+    line = editor->lines[row];
+    length = editor_strlen(line);
+
+    if(col > length) return 0;
+
+    for(size_t i = col; i < length; i++)
+    {
+        line[i] = line[i + 1];
+    }
+
+    editor->modified = 1;
+    return 1;
+}
+
 int editor_insert_newline(struct Editor *editor, size_t row, size_t col)
 {
     char *line;
